@@ -1,15 +1,9 @@
-
 import React from 'react';
 
 const Footer: React.FC = () => {
   const socialLinks = [
-    { name: 'GitHub', href: '#' },
-    { name: 'Twitter', href: '#' },
-  ];
-
-  const policyLinks = [
-    { name: '이용약관', href: '#' },
-    { name: '개인정보처리방침', href: '#' },
+    { name: 'GitHub', href: 'https://github.com/kstost/firstvibe' },
+    { name: 'NPM', href: 'https://www.npmjs.com/package/firstvibe' },
   ];
 
   return (
@@ -23,15 +17,6 @@ const Footer: React.FC = () => {
           <div className="flex space-x-6">
             {socialLinks.map(link => (
               <a key={link.name} href={link.href} className="hover:text-white transition-colors focus-ring rounded-md" target="_blank" rel="noopener noreferrer">
-                {link.name}
-              </a>
-            ))}
-          </div>
-        </div>
-        <div className="mt-8 pt-8 border-t border-slate-800 text-center text-sm">
-          <div className="flex justify-center space-x-4">
-            {policyLinks.map(link => (
-               <a key={link.name} href={link.href} className="hover:text-white transition-colors focus-ring rounded-md">
                 {link.name}
               </a>
             ))}
