@@ -301,8 +301,10 @@ const Examples = () => {
 };
 
 const Footer = () => {
-    const socialLinks = [{ name: 'GitHub', href: '#' }, { name: 'Twitter', href: '#' }];
-    const policyLinks = [{ name: '이용약관', href: '#' }, { name: '개인정보처리방침', href: '#' }];
+    const socialLinks = [
+        { name: 'GitHub', href: 'https://github.com/kstost/firstvibe' },
+        { name: 'NPM', href: 'https://www.npmjs.com/package/firstvibe' },
+    ];
     return createElement('footer', { className: "bg-slate-900 text-slate-400" },
         createElement('div', { className: "container mx-auto px-4 sm:px-6 lg:px-8 py-12" },
             createElement('div', { className: "flex flex-col md:flex-row justify-between items-center" },
@@ -313,13 +315,6 @@ const Footer = () => {
                 createElement('div', { className: "flex space-x-6" },
                     socialLinks.map(link =>
                         createElement('a', { key: link.name, href: link.href, className: "hover:text-white transition-colors focus-ring rounded-md", target: "_blank", rel: "noopener noreferrer" }, link.name)
-                    )
-                )
-            ),
-            createElement('div', { className: "mt-8 pt-8 border-t border-slate-800 text-center text-sm" },
-                createElement('div', { className: "flex justify-center space-x-4" },
-                    policyLinks.map(link =>
-                        createElement('a', { key: link.name, href: link.href, className: "hover:text-white transition-colors focus-ring rounded-md" }, link.name)
                     )
                 )
             )
@@ -347,6 +342,6 @@ if (!rootElement) {
     throw new Error("Could not find root element to mount to");
 }
 const root = createRoot(rootElement);
-root.render(createElement(App));
+root.render(createElement(React.StrictMode, null, createElement(App)));
 
 })();
