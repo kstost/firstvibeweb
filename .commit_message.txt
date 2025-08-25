@@ -1,1 +1,1 @@
-📝 SEO 메타데이터 추가 - 타이틀, 설명, OG, 트위터 카드
+🔄 클린 빌드 완료 - assets/index-DJIoHUtm.js 생성

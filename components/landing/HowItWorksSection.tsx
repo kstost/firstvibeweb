@@ -22,7 +22,20 @@ const Arrow = (): React.ReactNode => (
 
 const HowItWorksSection = (): React.ReactNode => {
   return (
-    <section className="py-16 md:py-24">
+    <section className="pt-0 pb-16 md:pb-24">
+      <div className="flex justify-center mb-8">
+        <video 
+          className="w-full max-w-4xl aspect-video rounded-xl shadow-2xl"
+          autoPlay
+          loop
+          muted
+          playsInline
+        >
+          <source src="./demo.mov" type="video/mp4" />
+          <source src="./demo.mov" type="video/quicktime" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
       <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-400">
         "한 문장으로 시작하세요."
       </h2>
