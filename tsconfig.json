@@ -25,12 +25,16 @@
     },
     "allowImportingTsExtensions": true,
     "noEmit": true,
+    "strict": false,
     "noImplicitAny": false,
     "strictNullChecks": false,
     "strictFunctionTypes": false,
     "strictBindCallApply": false,
     "noImplicitReturns": false,
     "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "noUnusedParameters": false,
+    "noImplicitThis": false,
+    "noImplicitOverride": false,
+    "suppressImplicitAnyIndexErrors": true
   }
 }
