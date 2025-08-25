@@ -1,7 +1,8 @@
 
-export interface ExampleProject {
-  id: string;
-  oneLiner: string;
-  summary: string[];
-  details: string[];
+export {};
+
+declare global {
+  interface Window {
+    gtag: (...args: any[]) => void;
+  }
 }

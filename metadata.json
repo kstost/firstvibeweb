@@ -1,5 +1,5 @@
 {
-  "name": "Copy of firstvibe",
-  "description": "A landing page for firstvibe, a tool that helps users turn a single sentence idea into a foundation for an MVP, including PRD, TRD, and Todo lists, through a Q&A-driven flow.",
+  "name": "firstvibe Landing Page",
+  "description": "A modern, responsive landing page for the 'firstvibe' CLI tool, designed to attract users and encourage them to try the tool by copying the execution command.",
   "requestFramePermissions": []
 }
