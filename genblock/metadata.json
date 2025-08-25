@@ -1,0 +1,5 @@
+{
+  "name": "Block Battle Arena: Gemini Edition",
+  "description": "A web-based block puzzle game where you can challenge yourself and generate creative new block shapes using AI. Drag blocks to the board, clear lines to score points, and see how high you can score before time runs out or you run out of moves.",
+  "requestFramePermissions": []
+}
