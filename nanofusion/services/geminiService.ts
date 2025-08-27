@@ -41,11 +41,14 @@ export const generateImage = async (params: GenerateImageParams): Promise<Genera
 
     const finalPrompt = `${prompt}\n\n위 요청에 따라 이미지를 수정하여 새로 생성해주세요. 텍스트로만 응답하지 마세요.`;
     const textPart: Part = { text: finalPrompt };
+    
+    // Place the text prompt before the image parts to improve model's understanding
+    const parts = [textPart, ...imageParts];
 
     const response: GenerateContentResponse = await ai.models.generateContent({
         model: MODEL_NAME,
         contents: {
-            parts: [...imageParts, textPart], // Prompt at the end might be better for some models
+            parts: parts,
         },
         config: {
             responseModalities: [Modality.IMAGE, Modality.TEXT],

@@ -1,15 +1,18 @@
-import React, { useState, useEffect, useCallback } from 'react';
+
+import React, { useState, useCallback } from 'react';
 import { ApiKeyInput } from './components/ApiKeyInput';
 import { ImageUploader } from './components/ImageUploader';
 import { PromptInput } from './components/PromptInput';
 import { ResultDisplay } from './components/ResultDisplay';
 import { HelpModal } from './components/HelpModal';
+import { GalleryModal } from './components/GalleryModal';
 import { Icon } from './components/Icon';
 import { Spinner } from './components/Spinner';
 import { useLocalStorage } from './hooks/useLocalStorage';
-import type { AppState, ImageFile, ApiError } from './types';
+import type { AppState, ImageFile, ApiError, StoredImage } from './types';
 import { fileToBase64 } from './services/imageUtils';
 import { generateImage } from './services/geminiService';
+import { addImage as saveImageToDb } from './services/dbService';
 import { MAX_IMAGES, MIN_IMAGES } from './constants';
 
 const App: React.FC = () => {
@@ -20,21 +23,18 @@ const App: React.FC = () => {
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [error, setError] = useState<ApiError | null>(null);
   const [isHelpVisible, setIsHelpVisible] = useState<boolean>(false);
+  const [isGalleryVisible, setIsGalleryVisible] = useState<boolean>(false);
 
   const canSubmit = apiKey.trim() !== '' && images.length >= MIN_IMAGES && images.length <= MAX_IMAGES && prompt.trim() !== '' && appState !== 'loading';
 
-  const resetState = useCallback(() => {
-    setAppState('idle');
-    setResultImage(null);
-    setError(null);
-  }, []);
-  
   const handleNewProject = () => {
     // Revoke old URLs to prevent memory leaks
     images.forEach(image => URL.revokeObjectURL(image.previewUrl));
     setImages([]);
     setPrompt('');
-    resetState();
+    setAppState('idle');
+    setResultImage(null);
+    setError(null);
   };
 
   const handleSubmit = async () => {
@@ -61,6 +61,15 @@ const App: React.FC = () => {
         images: imageParts,
       });
 
+      const imageToStore: Omit<StoredImage, 'id'> = {
+        base64: generatedImage.base64,
+        mimeType: generatedImage.mimeType,
+        prompt: prompt,
+        createdAt: Date.now(),
+        originalImages: imageParts,
+      };
+      await saveImageToDb(imageToStore);
+
       setResultImage(`data:${generatedImage.mimeType};base64,${generatedImage.base64}`);
       setAppState('success');
     } catch (err) {
@@ -73,13 +82,57 @@ const App: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    // Reset the result/error state if the source images change
-    if (appState === 'success' || appState === 'error') {
-      resetState();
+  const handleLoadFromGallery = (storedImage: StoredImage) => {
+    const base64ToBlob = (base64: string, mimeType: string): Blob => {
+        const byteCharacters = atob(base64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        return new Blob([byteArray], { type: mimeType });
+    };
+
+    const getExtensionFromMimeType = (mimeType: string): string => {
+        switch (mimeType) {
+            case 'image/jpeg': return 'jpg';
+            case 'image/png': return 'png';
+            case 'image/webp': return 'webp';
+            default: return 'png';
+        }
+    };
+    
+    if (!storedImage.id) return;
+
+    // Revoke old URLs to prevent memory leaks before replacing images
+    images.forEach(image => URL.revokeObjectURL(image.previewUrl));
+
+    // Load original images if available, otherwise show a message and clear images
+    if (storedImage.originalImages && storedImage.originalImages.length > 0) {
+      const originalImageFiles: ImageFile[] = storedImage.originalImages.map((originalImage, index) => {
+        const blob = base64ToBlob(originalImage.base64, originalImage.mimeType);
+        const extension = getExtensionFromMimeType(originalImage.mimeType);
+        const file = new File([blob], `original-image-${storedImage.id}-${index}.${extension}`, { type: originalImage.mimeType });
+        
+        return {
+          id: `gallery-original-${storedImage.id}-${index}-${Date.now()}`,
+          file: file,
+          previewUrl: URL.createObjectURL(file),
+        };
+      });
+
+      setImages(originalImageFiles);
+    } else {
+      // If no original images are stored, clear the upload area
+      setImages([]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [images]);
+
+    setPrompt(storedImage.prompt);
+    setResultImage(`data:${storedImage.mimeType};base64,${storedImage.base64}`);
+    setAppState('success');
+    setError(null);
+    setIsGalleryVisible(false); // Close modal
+  };
   
   const StatusIndicator = () => {
     switch (appState) {
@@ -92,16 +145,13 @@ const App: React.FC = () => {
           </div>
         );
       case 'idle':
-        if(images.length === 0) {
-           return (
-              <div className="w-full flex flex-col items-center justify-center p-8 text-center h-full border-2 border-dashed border-gray-700 rounded-lg">
-                <Icon name="image" className="w-16 h-16 text-gray-600 mb-4" />
-                <h3 className="text-xl font-semibold text-gray-400">합성된 이미지가 여기에 표시됩니다</h3>
-                <p className="text-gray-500 mt-2">이미지를 업로드하고 프롬프트를 작성하여 시작하세요.</p>
-              </div>
-            );
-        }
-        return null;
+        return (
+          <div className="w-full flex flex-col items-center justify-center p-8 text-center h-full border-2 border-dashed border-gray-700 rounded-lg">
+            <Icon name="image" className="w-16 h-16 text-gray-600 mb-4" />
+            <h3 className="text-xl font-semibold text-gray-400">합성된 이미지가 여기에 표시됩니다</h3>
+            <p className="text-gray-500 mt-2">이미지를 업로드하고 프롬프트를 작성하여 시작하세요.</p>
+          </div>
+        );
        case 'error':
         return (
             <div className="w-full flex flex-col items-center justify-center p-8 text-center h-full border-2 border-dashed border-red-500/50 rounded-lg bg-red-500/10">
@@ -124,9 +174,12 @@ const App: React.FC = () => {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
               <Icon name="logo" className="w-8 h-8 text-indigo-400"/>
-              <h1 className="text-xl font-bold tracking-tight">코깎나노퓨전</h1>
+              <h1 className="text-xl font-bold tracking-tight">코깎노바나나</h1>
             </div>
             <div className="flex items-center space-x-4">
+              <button onClick={() => setIsGalleryVisible(true)} className="text-gray-400 hover:text-white transition-colors" aria-label="갤러리 보기">
+                <Icon name="gallery" className="w-6 h-6" />
+              </button>
               <button onClick={() => setIsHelpVisible(true)} className="text-gray-400 hover:text-white transition-colors" aria-label="도움말 보기">
                 <Icon name="help" className="w-6 h-6" />
               </button>
@@ -197,6 +250,7 @@ const App: React.FC = () => {
       </footer>
 
       {isHelpVisible && <HelpModal isVisible={isHelpVisible} onClose={() => setIsHelpVisible(false)} />}
+      {isGalleryVisible && <GalleryModal isVisible={isGalleryVisible} onClose={() => setIsGalleryVisible(false)} onLoad={handleLoadFromGallery} />}
     </div>
   );
 };

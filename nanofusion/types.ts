@@ -27,3 +27,12 @@ export interface ApiError {
     hint?: string;
     code?: 'INVALID_API_KEY' | 'QUOTA_EXCEEDED' | 'SAFETY' | 'NETWORK' | 'GENERIC' | 'NO_KEY' | 'FAILED_GENERATION' | 'NO_IMAGE_RETURNED';
 }
+
+export interface StoredImage {
+  id?: number;
+  base64: string;
+  mimeType: string;
+  prompt: string;
+  createdAt: number;
+  originalImages?: ApiImagePart[];
+}
