@@ -26,7 +26,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ imageSrc, onNewPro
       <div className="flex items-center space-x-4">
         <button
           onClick={handleDownload}
-          className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500"
+          className="hidden sm:inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500"
         >
           <Icon name="download" className="w-5 h-5 mr-2" />
           다운로드
