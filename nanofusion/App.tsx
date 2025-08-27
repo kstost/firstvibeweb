@@ -74,12 +74,12 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    // Reset if inputs change after a result is shown
+    // Reset the result/error state if the source images change
     if (appState === 'success' || appState === 'error') {
       resetState();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [images, prompt]);
+  }, [images]);
   
   const StatusIndicator = () => {
     switch (appState) {
