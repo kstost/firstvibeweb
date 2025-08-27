@@ -1,1 +1,1 @@
-🔄 클린 빌드 완료 - assets/index-DJIoHUtm.js 생성
+🔧 image-fusion-studio 빌드 설정 genblock과 동일하게 구성

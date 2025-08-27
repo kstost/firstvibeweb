@@ -1,0 +1,5 @@
+{
+  "name": "Image Fusion Studio",
+  "description": "An intuitive web app that allows users to synthesize multiple images with a text prompt using the Gemini API. Upload 1-10 images, describe the desired outcome, and generate a unique, AI-created image directly in your browser.",
+  "requestFramePermissions": []
+}
