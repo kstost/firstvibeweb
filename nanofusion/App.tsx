@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { ApiKeyInput } from './components/ApiKeyInput';
 import { ImageUploader } from './components/ImageUploader';
@@ -31,6 +30,8 @@ const App: React.FC = () => {
   }, []);
   
   const handleNewProject = () => {
+    // Revoke old URLs to prevent memory leaks
+    images.forEach(image => URL.revokeObjectURL(image.previewUrl));
     setImages([]);
     setPrompt('');
     resetState();
@@ -63,7 +64,11 @@ const App: React.FC = () => {
       setResultImage(`data:${generatedImage.mimeType};base64,${generatedImage.base64}`);
       setAppState('success');
     } catch (err) {
-      setError(err as ApiError);
+      const apiError = err as ApiError;
+      setError(apiError);
+      if (apiError.code === 'INVALID_API_KEY') {
+        setApiKey('');
+      }
       setAppState('error');
     }
   };
@@ -86,20 +91,6 @@ const App: React.FC = () => {
             <p className="text-sm text-gray-500">시간이 걸릴 수 있습니다. 잠시만 기다려주세요.</p>
           </div>
         );
-      case 'error':
-        return (
-          <div className="flex flex-col items-center justify-center space-y-3 p-6 text-center bg-red-900/20 border border-red-500/30 rounded-lg h-full">
-            <Icon name="error" className="w-10 h-10 text-red-400" />
-            <p className="text-lg font-semibold text-red-400">{error?.message || '알 수 없는 오류가 발생했습니다'}</p>
-            {error?.hint && <p className="text-sm text-gray-300">{error.hint}</p>}
-            <button
-              onClick={resetState}
-              className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500"
-            >
-              다시 시도
-            </button>
-          </div>
-        );
       case 'idle':
         if(images.length === 0) {
            return (
@@ -111,6 +102,14 @@ const App: React.FC = () => {
             );
         }
         return null;
+       case 'error':
+        return (
+            <div className="w-full flex flex-col items-center justify-center p-8 text-center h-full border-2 border-dashed border-red-500/50 rounded-lg bg-red-500/10">
+                <Icon name="error" className="w-16 h-16 text-red-400 mb-4" />
+                <h3 className="text-xl font-semibold text-red-400">{error?.message || '오류가 발생했습니다'}</h3>
+                {error?.hint && <p className="text-gray-400 mt-2">{error.hint}</p>}
+            </div>
+        );
       case 'success':
         return null; // ResultDisplay will be shown
       default:
@@ -158,39 +157,46 @@ const App: React.FC = () => {
                 </p>
               </div>
             </div>
-            <ImageUploader images={images} setImages={setImages} disabled={appState === 'loading'}/>
-            <PromptInput prompt={prompt} setPrompt={setPrompt} disabled={appState === 'loading'}/>
-            <div className="flex items-center space-x-4 pt-4 border-t border-gray-700/50">
+
+            <ImageUploader images={images} setImages={setImages} disabled={appState === 'loading'} />
+
+            <PromptInput prompt={prompt} setPrompt={setPrompt} disabled={appState === 'loading'} />
+            
+            <div className="pt-4">
               <button
                 onClick={handleSubmit}
                 disabled={!canSubmit}
-                className="flex-1 inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500 disabled:bg-gray-600 disabled:cursor-not-allowed transition-all duration-200"
+                className="w-full inline-flex items-center justify-center px-6 py-3 bg-indigo-600 text-white font-semibold rounded-md hover:bg-indigo-500 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500 disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed"
+                aria-label="이미지 합성하기"
               >
-                <Icon name="sparkles" className={`w-5 h-5 mr-2 ${appState === 'loading' ? 'animate-pulse' : ''}`}/>
-                {appState === 'loading' ? '생성 중...' : '이미지 생성'}
+                {appState === 'loading' ? (
+                  <Spinner />
+                ) : (
+                  <>
+                    <Icon name="sparkles" className="w-5 h-5 mr-2" />
+                    이미지 합성하기
+                  </>
+                )}
               </button>
-               <button
-                  onClick={handleNewProject}
-                  className="px-6 py-3 border border-gray-600 text-base font-medium rounded-md text-gray-300 hover:bg-gray-700 hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500 disabled:opacity-50 transition-all duration-200"
-                  disabled={appState === 'loading'}
-                >
-                  새 프로젝트
-                </button>
             </div>
           </div>
-
+          
           {/* Right Column: Output */}
-          <div className="bg-gray-800/50 rounded-lg flex items-center justify-center p-4 min-h-[300px] lg:min-h-0">
-             {resultImage ? (
-                <ResultDisplay imageSrc={resultImage} onNewProject={handleNewProject} />
-              ) : (
-                <StatusIndicator />
-              )}
+          <div className="bg-gray-800/20 rounded-lg flex items-center justify-center min-h-[400px] lg:min-h-0">
+            {appState === 'success' && resultImage ? (
+              <ResultDisplay imageSrc={resultImage} onNewProject={handleNewProject} />
+            ) : (
+              <StatusIndicator />
+            )}
           </div>
         </div>
       </main>
       
-      <HelpModal isVisible={isHelpVisible} onClose={() => setIsHelpVisible(false)} />
+      <footer className="text-center p-4 text-xs text-gray-500">
+        본 프로그램은 <a href="https://cokac.com/" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-300">코드깎는노인</a>에 의해서 <a href="https://firstvibe.dev/" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-300">firstvibe</a>의 도움을 받아 만들어졌습니다.
+      </footer>
+
+      {isHelpVisible && <HelpModal isVisible={isHelpVisible} onClose={() => setIsHelpVisible(false)} />}
     </div>
   );
 };

@@ -1,4 +1,3 @@
-
 import React, { useCallback } from 'react';
 import type { ImageFile } from '../types';
 import { MAX_IMAGES, ACCEPTED_IMAGE_TYPES, MIN_IMAGES } from '../constants';
@@ -30,12 +29,6 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ images, setImages,
           alert(`최대 ${MAX_IMAGES}개의 이미지만 업로드할 수 있습니다.`);
           return prev;
         }
-        // Clean up old object URLs to prevent memory leaks
-        prev.forEach(img => {
-            if (!combined.find(c => c.id === img.id)) {
-                URL.revokeObjectURL(img.previewUrl);
-            }
-        });
         return combined;
       });
       // Reset file input value to allow re-uploading the same file

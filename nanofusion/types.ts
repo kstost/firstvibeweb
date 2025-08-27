@@ -1,4 +1,3 @@
-
 export type AppState = 'idle' | 'loading' | 'success' | 'error';
 
 export interface ImageFile {
@@ -26,4 +25,5 @@ export interface GeneratedImage {
 export interface ApiError {
     message: string;
     hint?: string;
+    code?: 'INVALID_API_KEY' | 'QUOTA_EXCEEDED' | 'SAFETY' | 'NETWORK' | 'GENERIC' | 'NO_KEY' | 'FAILED_GENERATION' | 'NO_IMAGE_RETURNED';
 }
