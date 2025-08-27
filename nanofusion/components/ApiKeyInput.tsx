@@ -16,14 +16,14 @@ export const ApiKeyInput: React.FC<ApiKeyInputProps> = ({ apiKey, setApiKey }) =
         type={isVisible ? 'text' : 'password'}
         value={apiKey}
         onChange={(e) => setApiKey(e.target.value)}
-        placeholder="Enter your Gemini API Key"
-        className="w-48 sm:w-64 bg-gray-700 text-gray-200 placeholder-gray-400 rounded-md py-2 pl-3 pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        placeholder="Gemini API 키를 입력하세요"
+        className="w-full bg-gray-700 text-gray-200 placeholder-gray-400 rounded-md py-2 pl-3 pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500"
       />
       <button
         type="button"
         onClick={() => setIsVisible(!isVisible)}
         className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-white"
-        aria-label={isVisible ? 'Hide API Key' : 'Show API Key'}
+        aria-label={isVisible ? 'API 키 숨기기' : 'API 키 보기'}
       >
         <Icon name={isVisible ? 'eyeOff' : 'eye'} className="w-5 h-5" />
       </button>

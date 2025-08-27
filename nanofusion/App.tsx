@@ -82,31 +82,31 @@ const App: React.FC = () => {
         return (
           <div className="flex flex-col items-center justify-center space-y-4 p-8 text-center h-full">
             <Spinner />
-            <p className="text-lg text-gray-400">Synthesizing your image...</p>
-            <p className="text-sm text-gray-500">This can take a moment. Please wait.</p>
+            <p className="text-lg text-gray-400">이미지를 합성하는 중...</p>
+            <p className="text-sm text-gray-500">시간이 걸릴 수 있습니다. 잠시만 기다려주세요.</p>
           </div>
         );
       case 'error':
         return (
           <div className="flex flex-col items-center justify-center space-y-3 p-6 text-center bg-red-900/20 border border-red-500/30 rounded-lg h-full">
             <Icon name="error" className="w-10 h-10 text-red-400" />
-            <p className="text-lg font-semibold text-red-400">{error?.message || 'An unknown error occurred'}</p>
+            <p className="text-lg font-semibold text-red-400">{error?.message || '알 수 없는 오류가 발생했습니다'}</p>
             {error?.hint && <p className="text-sm text-gray-300">{error.hint}</p>}
             <button
               onClick={resetState}
               className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500"
             >
-              Try Again
+              다시 시도
             </button>
           </div>
         );
       case 'idle':
         if(images.length === 0) {
            return (
-              <div className="flex flex-col items-center justify-center p-8 text-center h-full border-2 border-dashed border-gray-700 rounded-lg">
+              <div className="w-full flex flex-col items-center justify-center p-8 text-center h-full border-2 border-dashed border-gray-700 rounded-lg">
                 <Icon name="image" className="w-16 h-16 text-gray-600 mb-4" />
-                <h3 className="text-xl font-semibold text-gray-400">Your Fused Image Will Appear Here</h3>
-                <p className="text-gray-500 mt-2">Start by uploading your images and writing a prompt.</p>
+                <h3 className="text-xl font-semibold text-gray-400">합성된 이미지가 여기에 표시됩니다</h3>
+                <p className="text-gray-500 mt-2">이미지를 업로드하고 프롬프트를 작성하여 시작하세요.</p>
               </div>
             );
         }
@@ -125,13 +125,12 @@ const App: React.FC = () => {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
               <Icon name="logo" className="w-8 h-8 text-indigo-400"/>
-              <h1 className="text-xl font-bold tracking-tight">Image Fusion Studio</h1>
+              <h1 className="text-xl font-bold tracking-tight">코깎나노퓨전</h1>
             </div>
             <div className="flex items-center space-x-4">
-              <button onClick={() => setIsHelpVisible(true)} className="text-gray-400 hover:text-white transition-colors">
+              <button onClick={() => setIsHelpVisible(true)} className="text-gray-400 hover:text-white transition-colors" aria-label="도움말 보기">
                 <Icon name="help" className="w-6 h-6" />
               </button>
-              <ApiKeyInput apiKey={apiKey} setApiKey={setApiKey} />
             </div>
           </div>
         </div>
@@ -141,6 +140,24 @@ const App: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
           {/* Left Column: Inputs */}
           <div className="flex flex-col space-y-8">
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold">1. Gemini API 키 설정</h2>
+              <div className="bg-gray-800/50 p-4 rounded-lg space-y-3">
+                <ApiKeyInput apiKey={apiKey} setApiKey={setApiKey} />
+                <p className="text-xs text-gray-400">
+                  API 키가 없으신가요?{' '}
+                  <a
+                    href="https://aistudio.google.com/apikey"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-indigo-400 hover:underline"
+                  >
+                    Google AI Studio
+                  </a>
+                  에서 키를 발급받아 붙여넣어 주세요.
+                </p>
+              </div>
+            </div>
             <ImageUploader images={images} setImages={setImages} disabled={appState === 'loading'}/>
             <PromptInput prompt={prompt} setPrompt={setPrompt} disabled={appState === 'loading'}/>
             <div className="flex items-center space-x-4 pt-4 border-t border-gray-700/50">
@@ -150,14 +167,14 @@ const App: React.FC = () => {
                 className="flex-1 inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500 disabled:bg-gray-600 disabled:cursor-not-allowed transition-all duration-200"
               >
                 <Icon name="sparkles" className={`w-5 h-5 mr-2 ${appState === 'loading' ? 'animate-pulse' : ''}`}/>
-                {appState === 'loading' ? 'Generating...' : 'Generate Image'}
+                {appState === 'loading' ? '생성 중...' : '이미지 생성'}
               </button>
                <button
                   onClick={handleNewProject}
                   className="px-6 py-3 border border-gray-600 text-base font-medium rounded-md text-gray-300 hover:bg-gray-700 hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500 disabled:opacity-50 transition-all duration-200"
                   disabled={appState === 'loading'}
                 >
-                  New Project
+                  새 프로젝트
                 </button>
             </div>
           </div>

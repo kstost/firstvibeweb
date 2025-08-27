@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, Modality, GenerateContentResponse, Part } from "@google/genai";
 import type { GenerateImageParams, GeneratedImage, ApiError } from "../types";
 import { MODEL_NAME } from "../constants";
@@ -7,26 +8,26 @@ const mapErrorToApiError = (error: any): ApiError => {
 
     const message = error.message || '';
     if (message.includes('API key not valid')) {
-        return { message: "Invalid API Key", hint: "Please check your API key and ensure it's correct." };
+        return { message: "잘못된 API 키", hint: "API 키를 확인하고 올바른지 확인해주세요." };
     }
     if (message.includes('quota')) {
-        return { message: "Quota Exceeded", hint: "You have exceeded your request quota. Please check your Google AI Studio account." };
+        return { message: "할당량 초과", hint: "요청 할당량을 초과했습니다. Google AI Studio 계정을 확인해주세요." };
     }
      if (message.includes('SAFETY')) {
-        return { message: "Content Policy Violation", hint: "Your prompt or images may have violated the safety policy. Please adjust your input and try again." };
+        return { message: "콘텐츠 정책 위반", hint: "프롬프트나 이미지가 안전 정책을 위반했을 수 있습니다. 입력을 수정하고 다시 시도해주세요." };
     }
     if (error instanceof TypeError && message.includes('fetch')) {
-        return { message: "Network Error", hint: "Failed to connect to the Gemini API. Please check your internet connection." };
+        return { message: "네트워크 오류", hint: "Gemini API에 연결하지 못했습니다. 인터넷 연결을 확인해주세요." };
     }
 
-    return { message: "An Unknown Error Occurred", hint: "Something went wrong. Please check the console for more details." };
+    return { message: "알 수 없는 오류가 발생했습니다", hint: "문제가 발생했습니다. 자세한 내용은 콘솔을 확인해주세요." };
 }
 
 export const generateImage = async (params: GenerateImageParams): Promise<GeneratedImage> => {
   const { apiKey, prompt, images } = params;
 
   if (!apiKey) {
-    throw { message: "API Key is missing.", hint: "Please enter your Gemini API key to proceed." } as ApiError;
+    throw { message: "API 키가 없습니다.", hint: "계속하려면 Gemini API 키를 입력해주세요." } as ApiError;
   }
 
   try {
@@ -62,10 +63,10 @@ export const generateImage = async (params: GenerateImageParams): Promise<Genera
 
     const textResponse = response.text?.trim();
     if (textResponse) {
-      throw { message: "Generation Failed", hint: textResponse } as ApiError;
+      throw { message: "생성 실패", hint: textResponse } as ApiError;
     }
     
-    throw { message: "No Image Generated", hint: "The model did not return an image. Please try modifying your prompt." } as ApiError;
+    throw { message: "생성된 이미지 없음", hint: "모델이 이미지를 반환하지 않았습니다. 프롬프트를 수정하여 다시 시도해주세요." } as ApiError;
   } catch (err) {
     if ((err as ApiError).message && (err as ApiError).hint !== undefined) {
         throw err; 

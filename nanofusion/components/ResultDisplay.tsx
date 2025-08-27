@@ -29,14 +29,14 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ imageSrc, onNewPro
           className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500"
         >
           <Icon name="download" className="w-5 h-5 mr-2" />
-          Download
+          다운로드
         </button>
         <button
           onClick={onNewProject}
           className="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-500 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500"
         >
           <Icon name="plus" className="w-5 h-5 mr-2" />
-          New Project
+          새 프로젝트
         </button>
       </div>
     </div>

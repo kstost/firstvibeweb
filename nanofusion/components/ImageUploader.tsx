@@ -27,7 +27,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ images, setImages,
       setImages(prev => {
         const combined = [...prev, ...newImages];
         if (combined.length > MAX_IMAGES) {
-          alert(`You can only upload a maximum of ${MAX_IMAGES} images.`);
+          alert(`최대 ${MAX_IMAGES}개의 이미지만 업로드할 수 있습니다.`);
           return prev;
         }
         // Clean up old object URLs to prevent memory leaks
@@ -63,7 +63,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ images, setImages,
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold">1. Upload Images</h2>
+        <h2 className="text-lg font-semibold">2. 이미지 업로드</h2>
         <span className={`text-sm font-medium ${countColor}`}>{imageCount} / {MAX_IMAGES}</span>
       </div>
       <div className="bg-gray-800/50 p-4 rounded-lg">
@@ -79,9 +79,9 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ images, setImages,
           />
           <label htmlFor="file-upload" className="flex flex-col items-center justify-center space-y-2 cursor-pointer">
             <Icon name="upload" className="w-8 h-8 text-gray-500" />
-            <span className="font-medium text-indigo-400">Click to upload</span>
-            <span className="text-sm text-gray-500">or drag and drop</span>
-            <span className="text-xs text-gray-600">Supports: JPG, PNG, WEBP</span>
+            <span className="font-medium text-indigo-400">클릭하여 업로드</span>
+            <span className="text-sm text-gray-500">또는 파일을 끌어다 놓으세요</span>
+            <span className="text-xs text-gray-600">지원 형식: JPG, PNG, WEBP</span>
           </label>
         </div>
         {images.length > 0 && (
@@ -97,7 +97,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ images, setImages,
                   <button
                     onClick={() => removeImage(image.id)}
                     className="absolute top-1 right-1 p-1 bg-black/50 rounded-full text-white hover:bg-red-500 transition-colors"
-                    aria-label="Remove image"
+                    aria-label="이미지 제거"
                     disabled={disabled}
                   >
                     <Icon name="close" className="w-4 h-4" />
